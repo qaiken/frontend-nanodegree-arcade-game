@@ -19,7 +19,7 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.x += this.speed * dt;
 
-    if(this.x > Enemy.canvas.width + 50)
+    if(this.x > canvas.width + 50)
       this.x = -100;
 };
 
@@ -32,17 +32,52 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function() {
-
+  this.sprite = 'images/char-boy.png';
+  this.x = canvas.width / 2 - 50;
+  this.y = canvas.height - 175;
 };
 
-Player.prototype.update = function() {
+Player.prototype.update = function(dir,amount) {
+  if(amount) {
+    var new_pos = this[dir] + amount;
+    console.log(new_pos);
+    if( !new_pos ||
+      new_pos > canvas.width ||
+      new_pos < 0 ||
+      new_pos > (canvas.height - 200) )
+        return;
+    this[dir] = new_pos;
+  }
 };
 
 Player.prototype.render = function() {
-
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 Player.prototype.handleInput = function(dir) {
+  var amount = 0;
+  if(dir === 'left') {
+    dir = 'x';
+    amount = -101;
+  }
+  if(dir === 'right') {
+    dir = 'x';
+    amount = 101;
+  }
+  if(dir === 'up') {
+    dir = 'y';
+    // inital jump
+    if ( this.y === (canvas.height - 175) )
+      amount = -55;
+    else
+      amount = -83;
+  }
+  if(dir === 'down') {
+    dir = 'y';
+    amount = 83;
+  }
+
+  this.update(dir,amount);
 };
 
 // Now instantiate your objects.
@@ -53,14 +88,12 @@ var allEnemies = [],
     player = new Player();
 
 Enemy.addEnemies = function() {
-  var i = 0;
-  while(i < 4) {
-    allEnemies.push(new Enemy(Math.random() * Enemy.canvas.width, (i * 83) + 55 ));
+  var i = 1;
+  while(i < 5) {
+    allEnemies.push(new Enemy(Math.random() * canvas.width, (i * 83) + 55 ));
     ++i;
   }
 };
-
-Enemy.canvas = document.querySelector('canvas');
 
 Enemy.addEnemies();
 
