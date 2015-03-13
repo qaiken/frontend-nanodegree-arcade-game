@@ -2,7 +2,7 @@
 var Enemy = function(x,y) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
-    this.speed = Math.random() * 75 + 50;
+    this.speed = this.generateSpeed();
     this.x = x;
     this.y = y;
 
@@ -19,8 +19,14 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.x += this.speed * dt;
 
-    if(this.x > canvas.width + 50)
-      this.x = -100;
+    if(this.x > canvas.width + 50) {
+      this.speed = this.generateSpeed();
+      this.x = -101;
+    }
+};
+
+Enemy.prototype.generateSpeed = function() {
+  return Math.random() * 100 + 50;
 };
 
 // Draw the enemy on the screen, required method for game
@@ -33,24 +39,29 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function() {
   this.sprite = 'images/char-boy.png';
-  this.x = canvas.width / 2 - 50;
-  this.y = canvas.height - 175;
+  this.init();
+};
+
+Player.prototype.init = function() {
+  // 50.5 is half the image width
+  this.x = (canvas.width/2) - 50.5;
+  // 171 is the image height
+  this.y = canvas.height - 171;
 };
 
 Player.prototype.update = function(dir,amount) {
   if(amount) {
     var new_pos = this[dir] + amount;
-    console.log(new_pos);
-    if( !new_pos ||
-      new_pos > canvas.width ||
-      new_pos < 0 ||
-      new_pos > (canvas.height - 200) )
+    if( dir === 'x' && (new_pos >= canvas.width) ||
+        dir === 'y' && (new_pos >= (canvas.height - 171)) ||
+        new_pos < 0 )
         return;
     this[dir] = new_pos;
   }
 };
 
 Player.prototype.render = function() {
+  console.log(this.y);
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
@@ -67,7 +78,7 @@ Player.prototype.handleInput = function(dir) {
   if(dir === 'up') {
     dir = 'y';
     // inital jump
-    if ( this.y === (canvas.height - 175) )
+    if ( this.y === (canvas.height - 171) )
       amount = -55;
     else
       amount = -83;
@@ -90,7 +101,7 @@ var allEnemies = [],
 Enemy.addEnemies = function() {
   var i = 1;
   while(i < 5) {
-    allEnemies.push(new Enemy(Math.random() * canvas.width, (i * 83) + 55 ));
+    allEnemies.push(new Enemy(Math.random() * canvas.width, (i * 83) + 48 ));
     ++i;
   }
 };
