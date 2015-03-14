@@ -86,8 +86,7 @@ var Engine = (function(global) {
     function checkCollisions() {
       allEnemies.forEach(function(enemy) {
         if( (enemy.x + 101) >= (player.x + 35) && enemy.x <= (player.x + 70) && enemy.y === player.y ) {
-          alert('game over');
-          player.init();
+          setTimeout(player.init.bind(player),100);
         }
       });
     }

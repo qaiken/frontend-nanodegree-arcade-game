@@ -26,7 +26,7 @@ Enemy.prototype.update = function(dt) {
 };
 
 Enemy.prototype.generateSpeed = function() {
-  return Math.random() * 100 + 50;
+  return (Math.random() * 100) + 50;
 };
 
 // Draw the enemy on the screen, required method for game
@@ -42,26 +42,41 @@ var Player = function() {
   this.init();
 };
 
+// 50.5 is half the image width
+Player.prototype.init_x = canvas.width/2 - 50.5;
+
+// 171 is the image height
+Player.prototype.init_y = canvas.height - 171;
+
 Player.prototype.init = function() {
-  // 50.5 is half the image width
-  this.x = (canvas.width/2) - 50.5;
-  // 171 is the image height
-  this.y = canvas.height - 171;
+  this.x = this.init_x;
+  this.y = this.init_y;
 };
 
 Player.prototype.update = function(dir,amount) {
   if(amount) {
+
     var new_pos = this[dir] + amount;
+
     if( dir === 'x' && (new_pos >= canvas.width) ||
-        dir === 'y' && (new_pos >= (canvas.height - 171)) ||
+        dir === 'y' && (new_pos > (canvas.height - 171)) ||
         new_pos < 0 )
-        return;
+      return;
+
     this[dir] = new_pos;
+
+    if( dir === 'y' && new_pos === 48 )
+      setTimeout(this.won.bind(this),100);
+
   }
 };
 
+Player.prototype.won = function() {
+  alert('you won!');
+  this.init();
+};
+
 Player.prototype.render = function() {
-  console.log(this.y);
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
@@ -77,15 +92,17 @@ Player.prototype.handleInput = function(dir) {
   }
   if(dir === 'up') {
     dir = 'y';
-    // inital jump
-    if ( this.y === (canvas.height - 171) )
+    if ( this.y === this.init_y )
       amount = -55;
     else
       amount = -83;
   }
   if(dir === 'down') {
     dir = 'y';
-    amount = 83;
+    if ( this.y === this.init_y - 55 )
+      amount = 55;
+    else
+      amount = 83;
   }
 
   this.update(dir,amount);
@@ -99,6 +116,7 @@ var allEnemies = [],
     player = new Player();
 
 Enemy.addEnemies = function(count) {
+  count = count || 2;
   while(count) {
     var i = 1;
     while(i < 5) {
@@ -109,7 +127,7 @@ Enemy.addEnemies = function(count) {
   }
 };
 
-Enemy.addEnemies(2);
+Enemy.addEnemies(3);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
