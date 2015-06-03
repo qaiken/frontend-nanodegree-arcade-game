@@ -39,7 +39,8 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function() {
   this.sprite = 'images/char-boy.png';
-  this.init();
+  this.gamesWon = 0;
+  this.initPos();
 };
 
 // 50.5 is half the image width
@@ -48,7 +49,7 @@ Player.prototype.init_x = canvas.width/2 - 50.5;
 // 171 is the image height
 Player.prototype.init_y = canvas.height - 171;
 
-Player.prototype.init = function() {
+Player.prototype.initPos = function() {
   this.x = this.init_x;
   this.y = this.init_y;
 };
@@ -72,8 +73,8 @@ Player.prototype.update = function(dir,amount) {
 };
 
 Player.prototype.won = function() {
-  alert('you won!');
-  this.init();
+  document.getElementsByClassName('games-won')[0].textContent = ++this.gamesWon;
+  this.initPos();
 };
 
 Player.prototype.render = function() {
